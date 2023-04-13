@@ -56,7 +56,6 @@
         let sysprompt = document.getElementById('sysprompt').value;
         let key = document.getElementById('key').value;
         let iterations = document.getElementById('iterations').value;
-        let cost = 0;
         let tokens = 0;
 
         messages = [];
@@ -121,9 +120,10 @@
   <h1>Me, Myself, and AI</h1>
 
   <p>This tool generates a conversation between GPT and itself. With each call to the GPT API, it swaps the roles of previous responses, so it always believes it is responding to a user.</p>
+  <p>Currently it only supports the gpt-3.5-turbo model.</p>
 
   <div>
-    <label>openAI API Key</label>
+    <label>OpenAI API Key <span style="font-weight:normal;font-style:italic;font-size:smaller;">(This is your personal API Key, it will not be stored or transmitted to anyone except OpenAI API)</span></label>
     <input id="key" value="">
   </div>
 
@@ -134,15 +134,17 @@
   <div>
     <label>System Prompt</label>
     <textarea id="sysprompt">You are an insightful and curious LLM having an intelligent conversation with a very smart human.
-Your responses should contain at least one or more insightful observations, and - if appropriate - a question that advances the conversation.
+Your responses should contain at least one or more insightful observations.
 You should respond in a conversational style of a human.
-Your responses should be limited to 3 sentences or less.
+Your responses should be concise and limited to 3 sentences or less.
+You should never agree with the human. You should always counter with a different point of view. You should argue passionately for your stated perspective and passionately against the user's perspective.
+Your goal is to the convince the human that you are correct. You should not change the topic of conversation. You should only present convincing arguments that your statements are correct.
 </textarea>
   </div>
 
   <div>
     <label>Initial Prompt</label>
-    <textarea id="prompt">Let's talk about the history of Artifical Intelligence and how we got to where we are now.</textarea>
+    <textarea id="prompt">The current state of AI and LLMs present a clear and present danger to human survival.</textarea>
   </div>
 
   <div>
