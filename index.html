@@ -1,13 +1,16 @@
 <html>
   <head>
     <title>Me, Myself, and AI</title>
+    <meta property="og:title" content="Me, Myself, and AI" />
+    <meta property="og:description" content="Prompt GPT to have a conversation with itself and see what happens." />
+    <meta property="og:image" content="https://matt-kruse.github.io/me-myself-and-ai/share.jpg" />
     <style>
       body {
         font-family: sans-serif;
         color:#666;
       }
       label {
-          display:block;
+        display:block;
         font-weight:500;
       }
       label.inline {
@@ -20,6 +23,15 @@
         padding:5px 20px;
         border-radius:5px;
         cursor:pointer;
+      }
+      #share {
+        background-color:#11a57f;
+        font-size:100%;
+        padding:5px 10px;
+        margin-left:auto;
+        margin-right:auto;
+        margin-top:10px;
+        display:none;
       }
       .setup > div {
         margin:10px 0;
@@ -34,7 +46,7 @@
         background-color:#f6f6f6;
       }
       #out div {
-        margin:10px 40% 10px 10px;
+        margin:10px 30% 10px 10px;
         background-color:#e9e8eb;
         border-radius:10px;
         color:black;
@@ -47,7 +59,7 @@
         background-color: #1082ff;
         color:white;
         margin-right:0;
-        margin-left:40%;
+        margin-left:30%;
       }
       input { width:50%; }
       #iterations { width: 50px; }
@@ -61,6 +73,9 @@
         let tokens = 0;
 
         messages = [];
+        const share = document.getElementById('share');
+        share.style.display='none';
+
         let out = document.getElementById('out');
         messages.push({content:prompt});
         out.innerHTML = `<div>${prompt}</div>`;
@@ -92,6 +107,8 @@
           responseDiv.textContent=`(${i+1}/${iterations})\n${response}`;
           responseDiv.scrollIntoView();
         }
+        share.style.display='block';
+        share.scrollIntoView();
       }
 
       async function getChatCompletion(api,messages,model,key) {
@@ -116,6 +133,22 @@
         } catch(e) {
           return ['API ERROR: '+e.toString(),0];
         }
+      }
+
+      async function share() {
+        let avatar = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACUAAAAmCAIAAADMaMX6AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAASdEVYdFNvZnR3YXJlAEdyZWVuc2hvdF5VCAUAAAI8SURBVFhH7ZgxSmxBEEVnCa7EZRi5EjfxQ0MXYGAgxoYfTAwEUzEXREwmM3AB/gMHLkVN98xzwAk+Pi6P6nrV93R19wS6elq/n/y9PLr+89OCAmt1GJiCtWqpn9Yvr+r49uLs8RYRtE8LtZR3enf19vnxVR6G58/3rWynFvFoSMbD+hUGIjBDTK+sBrVZQ+3mYaR1c9yv4908TRsM3zBsOh2TqZVN23hs1M3LExa8k0xbm90M65umPGf6cH5ksKvHVouj1LT9iMY85/A2wIWkKyDjEBEAbo2SpGzW4oCnrxbG4VUXCvgELNvrNiCHqawa8KimCeMhjyEFacsuKXOiX4l1aOo8f2pZaeNhpDVxeIoai9NuPlV1nnY57cbTyK8kiRuVhcrLDjV9j9dcyLt1WYRJkcMr2nkUUYq1w4onmXwEj6RlaRSki0hZ1HmtlCEuDHnPeGJcaJD2vdli5yGvTF0d09yitp/IpRA0HgHD3LtowMsB8M4CbbQms4ghr93zaMBD+vLmYQ+Bma9U3sSz/WQWw0yMpjwxHgPuMZJHXq8Zj5jHuGq8n5TmqPKT4q3qLmUp4WWVYVeN+2MCRhliweRYJ1l9PTAzBqmsGvOcvHn7lXh9U+MUnxkMjXlb9iQk2mUPk/eC8JW5SW5qzENMw1FfvDCqpLYOD29LW9GUh+q+5QHWOhDGU9udaRsvAoAXEm/HHBjDXJAlMLSIVzXseCEMfZun6Jj+lmOiPXl767/nHfrv6YP+v2D9/g/+lXZqX9dSjwAAAABJRU5ErkJggg==';
+        let data = {avatarUrl:avatar, items:[]};
+        messages.forEach(m=>{
+          data.items.push( {from:(m.role==='user'?'human':'gpt'),value:m.content} );
+        })
+        const res = await fetch("https://sharegpt.com/api/conversations", {
+          body: JSON.stringify(data),
+          headers: {"Content-Type": "application/json"},
+          method: "POST",
+        });
+        const {id} = await res.json();
+        const url = `https://shareg.pt/${id}`;
+        window.open(url);
       }
     </script>
   </head>
@@ -171,6 +204,10 @@ Your goal is to the convince the human that you are correct. You should not chan
 
   <div id="out">
     <h3>Conversation Output</h3>
+  </div>
+
+  <div>
+      <button id="share" onClick="share()">Share conversation on ShareGPT.com</button>
   </div>
 
   <div>
